@@ -6,6 +6,8 @@ import { CreatorPosts } from './CreatorPosts'
 import { CreatorConversation } from './CreatorConversation'
 import { TelegramLink } from './TelegramLink'
 import { ActivityStatus } from './ActivityStatus'
+import { getTelegramEnvironment, telegramHaptic } from '../lib/telegram'
+import { useTelegramBack } from '../hooks/useTelegramBack'
 import './CreatorProfile.css'
 
 interface CreatorProfileProps {
@@ -112,12 +114,12 @@ export function CreatorProfile({ creator, onClose }: CreatorProfileProps) {
       <button type="button" className="profile-close icon-button" aria-label={t('closeProfile')} autoFocus onClick={closeProfile}>
         <X size={22} strokeWidth={1.4} aria-hidden="true" />
       </button>
-      {creator && <ProfileContent key={creator.id} creator={creator} />}
+      {creator && <ProfileContent key={creator.id} creator={creator} onRequestClose={closeProfile} />}
     </dialog>
   )
 }
 
-function ProfileContent({ creator }: { creator: Creator }) {
+function ProfileContent({ creator, onRequestClose }: { creator: Creator; onRequestClose: () => void }) {
   const { language, t, text } = useLanguage()
   const [conversationOpen, setConversationOpen] = useState(false)
   const [conversationStarted, setConversationStarted] = useState(false)
@@ -126,6 +128,11 @@ function ProfileContent({ creator }: { creator: Creator }) {
   const startRef = useRef<HTMLButtonElement>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
   const identityRef = useRef<HTMLElement>(null)
+  const { isTelegramMiniApp } = getTelegramEnvironment()
+  useTelegramBack(() => {
+    if (conversationOpen) setConversationOpen(false)
+    else onRequestClose()
+  })
 
   useEffect(() => {
     const scroll = scrollRef.current
@@ -207,13 +214,13 @@ function ProfileContent({ creator }: { creator: Creator }) {
             className="primary-link profile-start-conversation"
             aria-expanded={conversationOpen}
             aria-controls={conversationStarted ? 'creator-chat' : undefined}
-            onClick={() => { setConversationStarted(true); setConversationOpen(true) }}
+            onClick={() => { telegramHaptic(); setConversationStarted(true); setConversationOpen(true) }}
           >
             <MessageCircle size={17} strokeWidth={1.5} aria-hidden="true" />
             <span>{t('startConversation')}</span>
             <ArrowUpRight className="profile-action-arrow" size={18} strokeWidth={1.5} aria-hidden="true" />
           </button>
-          <TelegramLink className="profile-telegram" showArrow />
+          {!isTelegramMiniApp && <TelegramLink className="profile-telegram" showArrow />}
         </div>
       </div>
       {conversationStarted && <CreatorConversation creator={creator} active={conversationOpen} onBack={() => setConversationOpen(false)} />}

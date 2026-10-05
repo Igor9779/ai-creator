@@ -4,4 +4,4 @@ export const navigation = [
   { label: 'about', href: '#vision' },
 ] as const
 
-export const TELEGRAM_URL = 'https://t.me/'
+export const TELEGRAM_URL = 'https://t.me/muse_ai_creators_bot?startapp'

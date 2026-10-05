@@ -4,9 +4,11 @@ import { navigation } from '../data/site'
 import { TelegramLink } from './TelegramLink'
 import { LanguageSelector } from './LanguageSelector'
 import { useLanguage } from '../i18n/context'
+import { getTelegramEnvironment } from '../lib/telegram'
 
 export function Header() {
   const { t } = useLanguage()
+  const { isTelegramMiniApp } = getTelegramEnvironment()
   const [menuOpen, setMenuOpen] = useState(false)
   const menuButtonRef = useRef<HTMLButtonElement>(null)
   const headerRef = useRef<HTMLElement>(null)
@@ -41,6 +43,20 @@ export function Header() {
       desktopQuery.removeEventListener('change', closeOnDesktop)
     }
   }, [menuOpen])
+
+  if (isTelegramMiniApp) return (
+    <header className="site-header mini-header">
+      <div className="header-inner page-container">
+        <button type="button" className="wordmark" aria-label={t('home')} onClick={() => window.scrollTo({ top: 0 })}>
+          MUSE<span className="wordmark-dot" aria-hidden="true">.</span>
+        </button>
+        <div className="mini-header-meta">
+          <span className="eyebrow">{t('heroEyebrow')}</span>
+          <LanguageSelector onOpen={() => setMenuOpen(false)} />
+        </div>
+      </div>
+    </header>
+  )
 
   return (
     <header ref={headerRef} className="site-header">

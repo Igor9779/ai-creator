@@ -3,6 +3,7 @@ import { ArrowUpRight, Send } from 'lucide-react'
 import { TELEGRAM_URL } from '../data/site'
 import { useLanguage } from '../i18n/context'
 import './TelegramLink.css'
+import { getTelegramEnvironment } from '../lib/telegram'
 
 interface TelegramLinkProps {
   className?: string
@@ -15,6 +16,7 @@ interface TelegramLinkProps {
 export function TelegramLink({ className = '', children, label, variant = 'outline', showArrow = false }: TelegramLinkProps) {
   const { t } = useLanguage()
   const translatedLabel = label ?? t('openTelegram')
+  if (getTelegramEnvironment().isTelegramMiniApp) return null
   return (
     <a
       href={TELEGRAM_URL}
@@ -22,7 +24,7 @@ export function TelegramLink({ className = '', children, label, variant = 'outli
       target="_blank"
       rel="noopener noreferrer"
       aria-label={translatedLabel}
-      title={t('telegramPreview')}
+      title={t('telegramDestination')}
     >
       <Send className="telegram-link-icon" size={17} strokeWidth={1.6} aria-hidden="true" />
       <span className="telegram-link-label">{children ?? translatedLabel}</span>

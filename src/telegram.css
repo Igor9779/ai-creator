@@ -1,0 +1,145 @@
+/* Progressive enhancement: none of these rules affect the standalone site. */
+@layer components {
+  html[data-telegram-mini-app="true"] {
+    --muse-tg-height: 100dvh;
+    --muse-tg-top: env(safe-area-inset-top, 0px);
+    --muse-tg-bottom: env(safe-area-inset-bottom, 0px);
+    --muse-tg-left: env(safe-area-inset-left, 0px);
+    --muse-tg-right: env(safe-area-inset-right, 0px);
+  }
+
+  [data-telegram-mini-app="true"] body {
+    min-height: var(--muse-tg-height);
+    padding-inline: var(--muse-tg-left) var(--muse-tg-right);
+  }
+
+  [data-telegram-mini-app="true"] .mini-header {
+    padding-top: var(--muse-tg-top);
+  }
+
+  [data-telegram-mini-app="true"] .header-inner {
+    display: flex;
+    height: 60px;
+  }
+
+  [data-telegram-mini-app="true"] .mini-header-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  [data-telegram-mini-app="true"] .mini-header-meta > .eyebrow {
+    color: var(--color-muted);
+    font-size: 9px;
+    letter-spacing: .08em;
+  }
+
+  [data-telegram-mini-app="true"] .language-menu {
+    right: 0;
+    left: auto;
+  }
+
+  [data-telegram-mini-app="true"] .creator-discovery {
+    padding-top: 28px;
+    padding-bottom: calc(40px + var(--muse-tg-bottom));
+    border-top: 0;
+  }
+
+  [data-telegram-mini-app="true"] .mini-welcome {
+    margin-bottom: 18px;
+    color: var(--color-muted);
+    font-size: 14px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+  }
+
+  [data-telegram-mini-app="true"] .mini-demo-note {
+    margin-top: 12px;
+    color: var(--color-muted);
+    font-size: 10px;
+    line-height: 1.6;
+  }
+
+  [data-telegram-mini-app="true"] .profile-handle { display: none; }
+
+  [data-telegram-mini-app="true"] .profile-actions {
+    grid-template-columns: minmax(0, 1fr);
+    padding-bottom: calc(12px + var(--muse-tg-bottom));
+  }
+
+  [data-telegram-mini-app="true"] .profile-body {
+    padding-bottom: calc(112px + var(--muse-tg-bottom));
+  }
+
+  [data-telegram-mini-app="true"] .profile-scroll {
+    scroll-padding-bottom: calc(112px + var(--muse-tg-bottom));
+  }
+
+  [data-telegram-mini-app="true"] .chat-header {
+    min-height: 70px;
+    padding-block: 12px;
+    padding-left: 20px;
+  }
+
+  [data-telegram-mini-app="true"] .chat-introduction {
+    padding: 0 0 20px;
+  }
+
+  [data-telegram-mini-app="true"] .chat-day { margin-top: 0; }
+
+  [data-telegram-mini-app="true"] .chat-composer {
+    padding-bottom: calc(10px + var(--muse-tg-bottom));
+  }
+
+  [data-telegram-mini-app="true"] .mini-chat-note {
+    margin-top: 10px;
+    color: var(--color-muted);
+    text-align: center;
+    font-size: 10px;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 959px) {
+    [data-telegram-mini-app="true"] .creator-profile {
+      inset: 0 0 auto;
+      height: var(--muse-tg-height);
+      max-height: var(--muse-tg-height);
+      padding-top: var(--muse-tg-top);
+      padding-inline: var(--muse-tg-left) var(--muse-tg-right);
+      border: 0;
+      border-radius: 0;
+    }
+
+    [data-telegram-mini-app="true"] .profile-close {
+      top: calc(14px + var(--muse-tg-top));
+      right: calc(16px + var(--muse-tg-right));
+    }
+
+    [data-telegram-mini-app="true"] .profile-context {
+      top: var(--muse-tg-top);
+      right: var(--muse-tg-right);
+      left: var(--muse-tg-left);
+    }
+
+    [data-telegram-mini-app="true"] .profile-actions {
+      right: var(--muse-tg-right);
+      left: var(--muse-tg-left);
+    }
+
+    [data-telegram-mini-app="true"] .creator-conversation {
+      inset: var(--muse-tg-top) var(--muse-tg-right) 0 var(--muse-tg-left);
+    }
+  }
+
+  @media (min-width: 960px) {
+    [data-telegram-mini-app="true"] .creator-profile {
+      inset: calc(16px + var(--muse-tg-top)) 0 auto;
+      width: min(calc(100% - 64px - var(--muse-tg-left) - var(--muse-tg-right)), 1120px);
+      height: min(calc(var(--muse-tg-height) - var(--muse-tg-top) - var(--muse-tg-bottom) - 32px), 860px);
+      max-height: calc(var(--muse-tg-height) - var(--muse-tg-top) - var(--muse-tg-bottom) - 32px);
+      margin: 0 auto;
+    }
+
+    [data-telegram-mini-app="true"] .profile-visual { height: min(calc(var(--muse-tg-height) - var(--muse-tg-top) - var(--muse-tg-bottom) - 34px), 858px); }
+  }
+}

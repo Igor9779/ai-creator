@@ -1,5 +1,7 @@
 # MUSE — AI Creator Showcase
 
+**English** · [Русский](README.ru.md) · [Українська](README.uk.md)
+
 A premium, mobile-first discovery experience for fictional AI personalities. Cinematic photography, editorial typography, and a restrained charcoal, ivory, and terracotta palette guide visitors from finding a creator to starting a conversation.
 
 ## Tech Stack
@@ -50,12 +52,14 @@ src/
   assets/creators/  # Optimized portraits, avatars, feed photography, generation prompts
   components/      # Landing sections, creator cards, profiles, feed, chat, shared CTAs
   data/            # Canonical creator records and local mock content
-  hooks/           # One-time section reveals
+  hooks/           # One-time section reveals and native Telegram back navigation
   i18n/            # Typed dictionaries, language provider, localized content helpers
+  lib/             # Centralized Telegram Web App SDK integration
   types/           # Creator, post, conversation, and hero presentation models
-  App.tsx          # Application composition
-  main.tsx         # Entry point and local font imports
+  App.tsx          # Application composition and presentation mode
+  main.tsx         # Entry point, Telegram preparation, and local font imports
   index.css        # Tailwind theme, design tokens, and shared responsive styles
+  telegram.css     # Mini App styles, safe areas, and viewport adaptation
 ```
 
 The landing page is composed of `Header`, `Hero`, `CreatorDiscovery`, `Vision`, `FinalConversation`, and `Footer`. Discovery owns the selected creator; `CreatorProfile` manages the open profile session. `CreatorPosts` and `CreatorConversation` handle feed reactions and conversation state. Shared `TelegramLink` and `ActivityStatus` components keep product signals consistent.
@@ -75,6 +79,16 @@ English (`EN`) is the default. The header selector switches to Ukrainian (`UA`) 
 Creator records remain shared. Translatable fields use `Localized<T>` and the `localized(en, ua, ru)` helper in the existing data modules. Names, usernames, statistics, asset references, and content IDs remain unchanged. Prepared chat messages follow the selected language, while free text authored by a visitor stays verbatim. Post dates use the selected locale and keep their original UTC timestamps.
 
 To edit copy, update the interface dictionary or the corresponding localized creator, post, or conversation field. Adding a language requires updating the `Language` union, language options, dictionaries, and localized data; TypeScript identifies missing entries.
+
+## Telegram Mini App
+
+MUSE has two modes in the same React codebase: the full standalone website and a compact Telegram creator-discovery experience. The integration in [`src/lib/telegram.ts`](src/lib/telegram.ts) loads the [official Telegram Web App SDK](https://core.telegram.org/bots/webapps) only in a Telegram launch environment; ordinary browser visitors require no Telegram APIs or SDK requests.
+
+The Mini App calls `ready()` and `expand()`, preserves MUSE's dark palette, adapts to Telegram viewport and safe-area events, and keeps the composer visible when the keyboard opens. Native Back returns from chat to profile, then to discovery. Optional soft haptics accompany opening a profile, starting chat, and choosing a quick reply. EN/UA/RU localization and the existing creators, feed, and mock chat are shared across both modes.
+
+Configure the deployed HTTPS URL as the Mini App URL in BotFather to launch it from Telegram. An optional first-name greeting uses unvalidated frontend data for display only. Telegram authentication, server-side `initData` validation, bot infrastructure, and real AI messaging are intentionally outside this demo's scope. Website conversion links use the centralized `TELEGRAM_URL` for the configured Mini App.
+
+Mini App QA covers all four creators in EN/UA/RU at 375, 390, and 430px, plus desktop, keyboard resizing, older API support, and React StrictMode. It uses the official SDK with simulated native and Telegram Web iframe events; a live client smoke test still requires BotFather configuration.
 
 ## Performance and Accessibility
 
@@ -114,6 +128,6 @@ Import the repository into Vercel, or run `vercel --prod` with an authenticated 
 
 All creators, posts, social statistics, online indicators, and chat interactions are fictional demo/mock data. Each creator has five recent posts and five scripted chat responses. The simulated typing delay is 1.1 seconds; arbitrary messages receive a local fallback response. No live AI model is called, and no messages or reactions are sent to a service.
 
-All Telegram links use the demo destination `https://t.me/`. Replace `TELEGRAM_URL` in [`src/data/site.ts`](src/data/site.ts) to point every CTA at a real bot or Mini App. Clicking Telegram does not transfer the local conversation.
+All website Telegram CTAs open the configured Mini App for `@muse_ai_creators_bot`. The destination is defined only by `TELEGRAM_URL` in [`src/data/site.ts`](src/data/site.ts). These CTAs are hidden inside Mini App mode. Clicking Telegram does not transfer the local conversation.
 
-This is a frontend showcase with no backend, database, authentication, payments, or external API integration.
+This is a frontend showcase with no backend, database, authentication, payments, or external AI APIs.

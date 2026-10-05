@@ -5,6 +5,7 @@ import type { Localized } from '../i18n/types'
 import { useLanguage } from '../i18n/context'
 import { TelegramLink } from './TelegramLink'
 import { ActivityStatus } from './ActivityStatus'
+import { getTelegramEnvironment, telegramHaptic } from '../lib/telegram'
 import './CreatorConversation.css'
 
 interface CreatorConversationProps {
@@ -19,6 +20,7 @@ const MESSAGE_LIMIT = 500
 
 export function CreatorConversation({ creator, active, onBack }: CreatorConversationProps) {
   const { language, t, text } = useLanguage()
+  const { isTelegramMiniApp, nativeBackSupported } = getTelegramEnvironment()
   const [messages, setMessages] = useState<readonly ChatMessage[]>(() => [{
     id: `${creator.id}-greeting`, creatorId: creator.id, role: 'creator',
     content: creator.chat.greeting, createdAt: new Date().toISOString(),
@@ -54,6 +56,16 @@ export function CreatorConversation({ creator, active, onBack }: CreatorConversa
   }, [active, messages, typing, language])
 
   useEffect(() => {
+    const transcript = transcriptRef.current
+    if (!active || !isTelegramMiniApp || !transcript) return
+    const observer = new ResizeObserver(() => {
+      if (atBottomRef.current) transcript.scrollTop = transcript.scrollHeight
+    })
+    observer.observe(transcript)
+    return () => observer.disconnect()
+  }, [active, isTelegramMiniApp])
+
+  useEffect(() => {
     const input = inputRef.current
     if (!input || !active) return
     input.style.height = '0px'
@@ -68,7 +80,7 @@ export function CreatorConversation({ creator, active, onBack }: CreatorConversa
     let frame: number | null = null
     function updateViewport() {
       if (!dialog || !viewport) return
-      if (window.innerWidth < 960 && window.innerHeight - viewport.height > 100) {
+      if (!isTelegramMiniApp && window.innerWidth < 960 && window.innerHeight - viewport.height > 100) {
         dialog.style.setProperty('--profile-height', `${Math.floor(viewport.height - 8)}px`)
         dialog.style.setProperty('--profile-bottom', `${Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop)}px`)
       } else {
@@ -91,11 +103,11 @@ export function CreatorConversation({ creator, active, onBack }: CreatorConversa
       dialog.style.removeProperty('--profile-height')
       dialog.style.removeProperty('--profile-bottom')
     }
-  }, [active])
+  }, [active, isTelegramMiniApp])
 
   function sendMessage(content: string | Localized<string>) {
     const authoredText = text(content).trim()
-    if (!authoredText || authoredText.length > MESSAGE_LIMIT || pendingRef.current) return
+    if (!authoredText || authoredText.length > MESSAGE_LIMIT || pendingRef.current) return false
     const prompt = creator.chat.prompts.find((item) => Object.values(item.message).some((message) => message.toLowerCase() === authoredText.toLowerCase()))
     pendingRef.current = true
     atBottomRef.current = true
@@ -116,6 +128,7 @@ export function CreatorConversation({ creator, active, onBack }: CreatorConversa
       pendingRef.current = false
       replyTimerRef.current = null
     }, REPLY_DELAY_MS)
+    return true
   }
 
   return (
@@ -131,9 +144,9 @@ export function CreatorConversation({ creator, active, onBack }: CreatorConversa
 
       <div className="chat-pane">
         <header className="chat-header">
-          <button type="button" className="chat-back icon-button" aria-label={t('backToProfile')} onClick={onBack}>
+          {!nativeBackSupported && <button type="button" className="chat-back icon-button" aria-label={t('backToProfile')} onClick={onBack}>
             <ArrowLeft size={20} strokeWidth={1.4} aria-hidden="true" />
-          </button>
+          </button>}
           <img src={creator.avatar} alt="" width={256} height={256} />
           <div className="chat-identity">
             <h2 id="conversation-title" ref={headingRef} tabIndex={-1}>{creator.name}</h2>
@@ -155,8 +168,8 @@ export function CreatorConversation({ creator, active, onBack }: CreatorConversa
           }}
         >
           <div className="chat-introduction">
-            <p className="eyebrow">{t('aiCompanion')} / {t('museOriginal')}</p>
-            <p>{t('firstHello')}<br /><em>{t('seeWhere')}</em></p>
+            {!isTelegramMiniApp && <><p className="eyebrow">{t('aiCompanion')} / {t('museOriginal')}</p>
+            <p>{t('firstHello')}<br /><em>{t('seeWhere')}</em></p></>}
             <span className="chat-day">{t('today')}</span>
           </div>
           <ol className="chat-messages">
@@ -182,7 +195,7 @@ export function CreatorConversation({ creator, active, onBack }: CreatorConversa
               const prompt = creator.chat.prompts.find((item) => item.id === id)
               return prompt && (
                 <button type="button" key={prompt.id} disabled={typing} onClick={() => {
-                  sendMessage(prompt.message)
+                  if (sendMessage(prompt.message)) telegramHaptic()
                   transcriptRef.current?.focus({ preventScroll: true })
                 }}>
                   {text(prompt.label)}
@@ -217,11 +230,11 @@ export function CreatorConversation({ creator, active, onBack }: CreatorConversa
               </button>
             </div>
           </form>
-          <div className="chat-next-step" data-ready={hasReply}>
+          {isTelegramMiniApp ? <p className="mini-chat-note">{t('telegramChatDemo')}</p> : <div className="chat-next-step" data-ready={hasReply}>
             <p className="chat-next-copy">{hasReply ? t('keepTalking', { name: displayName }) : t('takeFurther')}</p>
             <TelegramLink className="chat-telegram" label={t('continueTelegram')} variant={hasReply ? 'primary' : 'outline'} showArrow />
             <p className="chat-demo-note">{t('chatDemo')}</p>
-          </div>
+          </div>}
         </div>
       </div>
     </section>
