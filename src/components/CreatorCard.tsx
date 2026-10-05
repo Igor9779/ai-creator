@@ -1,3 +1,4 @@
+import { useLanguage } from '../i18n/context'
 import { ArrowUpRight } from 'lucide-react'
 import type { CSSProperties } from 'react'
 import type { Creator } from '../types/creator'
@@ -9,6 +10,7 @@ interface CreatorCardProps {
 }
 
 export function CreatorCard({ item, onViewProfile }: CreatorCardProps) {
+  const { t, text } = useLanguage()
   const { creator, layout, number, imagePosition } = item
   const titleId = `discovery-${creator.id}`
   const imageStyle = { '--creator-image-position': imagePosition } as CSSProperties
@@ -19,13 +21,13 @@ export function CreatorCard({ item, onViewProfile }: CreatorCardProps) {
         type="button"
         className="creator-card-image"
         style={imageStyle}
-        aria-label={`Open ${creator.name}'s profile`}
+        aria-label={t('openProfile', { name: creator.name })}
         aria-haspopup="dialog"
         onClick={() => onViewProfile(creator)}
       >
         <img
           src={creator.coverImage}
-          alt={creator.coverImageAlt}
+          alt={text(creator.coverImageAlt)}
           width={800}
           height={1200}
           loading="lazy"
@@ -42,16 +44,16 @@ export function CreatorCard({ item, onViewProfile }: CreatorCardProps) {
           <h3 id={titleId}>{creator.name}<span aria-hidden="true">.</span></h3>
           <span className="creator-card-username">@{creator.username}</span>
         </div>
-        <p className="creator-card-category">{creator.category}</p>
-        <p className="creator-card-bio">{creator.bio}</p>
+        <p className="creator-card-category">{text(creator.category)}</p>
+        <p className="creator-card-bio">{text(creator.bio)}</p>
         <button
           type="button"
           className="creator-profile-link"
-          aria-label={`View ${creator.name}'s profile`}
+          aria-label={t('viewNamedProfile', { name: creator.name })}
           aria-haspopup="dialog"
           onClick={() => onViewProfile(creator)}
         >
-          View profile
+          {t('viewProfile')}
           <ArrowUpRight size={20} strokeWidth={1.4} aria-hidden="true" />
         </button>
       </div>

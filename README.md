@@ -21,6 +21,7 @@ Lucide React supplies icons. DM Sans and Instrument Serif are self-hosted with F
 - Telegram CTAs across the discovery-to-conversation journey.
 - Premium entrance, reveal, image, and interaction animations that respect `prefers-reduced-motion`.
 - Keyboard navigation, visible focus states, Escape and backdrop dismissal, modal focus handling, and body scroll locking.
+- Complete English, Ukrainian, and Russian localization with a keyboard-accessible language selector and saved language preference.
 
 ## Getting Started
 
@@ -50,6 +51,7 @@ src/
   components/      # Landing sections, creator cards, profiles, feed, chat, shared CTAs
   data/            # Canonical creator records and local mock content
   hooks/           # One-time section reveals
+  i18n/            # Typed dictionaries, language provider, localized content helpers
   types/           # Creator, post, conversation, and hero presentation models
   App.tsx          # Application composition
   main.tsx         # Entry point and local font imports
@@ -64,6 +66,16 @@ The landing page is composed of `Header`, `Hero`, `CreatorDiscovery`, `Vision`, 
 
 React state is scoped to the feature that owns it. Returning from chat preserves the draft, messages, profile scroll position, and local reactions. Closing a profile clears that session and cancels pending mock replies. No state-management framework is needed.
 
+### Localization
+
+English (`EN`) is the default. The header selector switches to Ukrainian (`UA`) or Russian (`RU`) immediately, saves the preference under `muse.language` in `localStorage`, and updates `<html lang>` to `en`, `uk`, or `ru`. Language selection also works when browser storage is unavailable; only persistence is skipped.
+
+[`src/i18n/translations.ts`](src/i18n/translations.ts) contains the interface dictionaries, including accessibility labels and document metadata. Translation keys are checked by TypeScript. `LanguageProvider` supplies `useLanguage()` to components; no i18n library or external translation service is used.
+
+Creator records remain shared. Translatable fields use `Localized<T>` and the `localized(en, ua, ru)` helper in the existing data modules. Names, usernames, statistics, asset references, and content IDs remain unchanged. Prepared chat messages follow the selected language, while free text authored by a visitor stays verbatim. Post dates use the selected locale and keep their original UTC timestamps.
+
+To edit copy, update the interface dictionary or the corresponding localized creator, post, or conversation field. Adding a language requires updating the `Language` union, language options, dictionaries, and localized data; TypeScript identifies missing entries.
+
 ## Performance and Accessibility
 
 Portraits use 800 × 1200 WebP images, avatars use 256 × 256 face crops, and supporting photography uses 960 × 640 WebP images. The leading hero portrait is preloaded; below-the-fold discovery, feed, and final-section images use native lazy loading and explicit dimensions. The same assets are reused across the landing page, profile, and chat. All fonts and imagery are served locally.
@@ -73,6 +85,8 @@ The conversation mounts on first use. A shared IntersectionObserver reveals land
 AI asset provenance and generation prompts are documented in [`src/assets/creators/README.md`](src/assets/creators/README.md) and [`feed-photography.md`](src/assets/creators/feed-photography.md).
 
 Final browser QA covered 375, 390, 414, 430, 768, 1024, 1280, and 1440px in Chrome: all four creator profiles, posts, chat replies, session state, Telegram CTAs, keyboard navigation, Escape, and reduced motion. Automated accessibility and contrast checks passed, as did React StrictMode checks for warnings and pending-reply cleanup. Lint, type checking, a clean lockfile installation, and the production build are verified separately.
+
+Localization QA covered all three languages at 375, 390, 430, 768, 1024, and 1440px: 18 responsive scenarios and 72 creator journeys. Checks include language persistence, document language, localized posts and scripted chat, keyboard selection, mobile navigation, reduced motion, invalid preferences, and unavailable browser storage. No horizontal overflow, broken images, or console warnings were found. Accessibility checks also cover the open language menu.
 
 ## Demo
 

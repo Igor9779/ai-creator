@@ -1,3 +1,4 @@
+import { useLanguage } from '../i18n/context'
 import { useEffect, useRef, useState } from 'react'
 import { ArrowUpRight, MessageCircle, X } from 'lucide-react'
 import type { Creator } from '../types/creator'
@@ -15,6 +16,7 @@ interface CreatorProfileProps {
 const countFormatter = new Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 1 })
 
 export function CreatorProfile({ creator, onClose }: CreatorProfileProps) {
+  const { t } = useLanguage()
   const dialogRef = useRef<HTMLDialogElement>(null)
   const closingRef = useRef(false)
 
@@ -107,7 +109,7 @@ export function CreatorProfile({ creator, onClose }: CreatorProfileProps) {
       }}
     >
       <span className="profile-handle" aria-hidden="true" />
-      <button type="button" className="profile-close icon-button" aria-label="Close profile" autoFocus onClick={closeProfile}>
+      <button type="button" className="profile-close icon-button" aria-label={t('closeProfile')} autoFocus onClick={closeProfile}>
         <X size={22} strokeWidth={1.4} aria-hidden="true" />
       </button>
       {creator && <ProfileContent key={creator.id} creator={creator} />}
@@ -116,6 +118,7 @@ export function CreatorProfile({ creator, onClose }: CreatorProfileProps) {
 }
 
 function ProfileContent({ creator }: { creator: Creator }) {
+  const { language, t, text } = useLanguage()
   const [conversationOpen, setConversationOpen] = useState(false)
   const [conversationStarted, setConversationStarted] = useState(false)
   const [likedPostIds, setLikedPostIds] = useState<ReadonlySet<string>>(() => new Set())
@@ -146,38 +149,38 @@ function ProfileContent({ creator }: { creator: Creator }) {
           <img src={creator.avatar} alt="" width={256} height={256} />
           <div><span className="profile-context-name">{creator.name}</span><span className="profile-context-username">@{creator.username}</span></div>
         </div>
-        <div ref={scrollRef} className="profile-scroll" tabIndex={0} role="region" aria-label="Creator profile content">
+        <div ref={scrollRef} className="profile-scroll" tabIndex={0} role="region" aria-label={t('profileContent')}>
           <figure className="profile-visual">
-            <img src={creator.coverImage} alt={creator.coverImageAlt} width={800} height={1200} decoding="async" />
+            <img src={creator.coverImage} alt={text(creator.coverImageAlt)} width={800} height={1200} decoding="async" />
             <figcaption className="profile-photo-caption">
-              <p className="eyebrow"><span className="accent-dot" />MUSE ORIGINAL / {creator.name}</p>
-              <p className="profile-photo-line">A mind<br /><em>of their own.</em></p>
+              <p className="eyebrow"><span className="accent-dot" />{t('museOriginal')} / {creator.name}</p>
+              <p className="profile-photo-line">{t('ownMind')}<br /><em>{t('ofTheirOwn')}</em></p>
             </figcaption>
-            <span className="profile-photo-edition" aria-hidden="true">THE FIRST GENERATION / 2026</span>
+            <span className="profile-photo-edition" aria-hidden="true">{t('firstGeneration')} / 2026</span>
           </figure>
 
           <div className="profile-body">
             <header ref={identityRef} className="profile-identity">
               <img className="profile-avatar" src={creator.avatar} alt="" width={256} height={256} decoding="async" />
-              <p className="eyebrow profile-category">{creator.category}</p>
+              <p className="eyebrow profile-category">{text(creator.category)}</p>
               <div className="profile-name-row">
                 <h2 id="profile-title" tabIndex={-1}>{creator.name}<span aria-hidden="true">.</span></h2>
                 <span className="profile-username">@{creator.username}</span>
               </div>
               <ActivityStatus className="profile-activity" />
-              <p id="profile-bio" className="profile-bio">{creator.bio}</p>
+              <p id="profile-bio" className="profile-bio">{text(creator.bio)}</p>
             </header>
 
-            <ul className="profile-personality" aria-label="Personality">
-              {creator.personality.map((trait) => <li key={trait}>{trait}</li>)}
+            <ul className="profile-personality" aria-label={t('personality')}>
+              {creator.personality[language].map((trait) => <li key={trait}>{trait}</li>)}
             </ul>
 
             <dl className="profile-stats">
-              <div><dt>Followers</dt><dd>{countFormatter.format(creator.stats.followers)}</dd></div>
-              <div><dt>Posts</dt><dd>{countFormatter.format(creator.stats.posts)}</dd></div>
-              <div><dt>Likes</dt><dd>{countFormatter.format(creator.stats.likes)}</dd></div>
+              <div><dt>{t('followers')}</dt><dd>{countFormatter.format(creator.stats.followers)}</dd></div>
+              <div><dt>{t('posts')}</dt><dd>{countFormatter.format(creator.stats.posts)}</dd></div>
+              <div><dt>{t('likes')}</dt><dd>{countFormatter.format(creator.stats.likes)}</dd></div>
             </dl>
-            <p className="profile-stats-note">Demo activity · Fictional counts</p>
+            <p className="profile-stats-note">{t('demoCounts')}</p>
 
             <CreatorPosts
               posts={creator.posts}
@@ -191,8 +194,8 @@ function ProfileContent({ creator }: { creator: Creator }) {
             />
 
             <div className="profile-interests">
-              <span className="eyebrow">IN THEIR WORLD</span>
-              <ul aria-label="Interests">{creator.tags.map((tag) => <li key={tag}>{tag}</li>)}</ul>
+              <span className="eyebrow">{t('theirWorld')}</span>
+              <ul aria-label={t('interests')}>{creator.tags[language].map((tag) => <li key={tag}>{tag}</li>)}</ul>
             </div>
           </div>
         </div>
@@ -207,7 +210,7 @@ function ProfileContent({ creator }: { creator: Creator }) {
             onClick={() => { setConversationStarted(true); setConversationOpen(true) }}
           >
             <MessageCircle size={17} strokeWidth={1.5} aria-hidden="true" />
-            Start conversation
+            <span>{t('startConversation')}</span>
             <ArrowUpRight className="profile-action-arrow" size={18} strokeWidth={1.5} aria-hidden="true" />
           </button>
           <TelegramLink className="profile-telegram" showArrow />

@@ -9,7 +9,7 @@
   --color-subtle: #82847b;
   --color-line: #30312b;
   --color-accent: #c46c4d;
-  --font-sans: "DM Sans Variable", sans-serif;
+  --font-sans: "DM Sans Variable", Arial, sans-serif;
   --font-editorial: "Instrument Serif", Georgia, serif;
   --ease-editorial: cubic-bezier(0.22, 1, 0.36, 1);
   --radius-control: 4px;
@@ -131,6 +131,8 @@
 
   .desktop-navigation { align-items: center; gap: 28px; }
   .header-actions { display: flex; align-items: center; gap: 10px; }
+  .header-telegram-full { display: none; }
+  .header-telegram-short { display: inline; }
 
   .nav-link {
     display: inline-flex;
@@ -199,9 +201,11 @@
   .eyebrow-divider { margin-inline: 2px; color: var(--color-subtle); }
 
   .hero-title {
+    --hero-type-size: clamp(49px, 13.4vw, 60px);
     margin-top: 20px;
     font-family: var(--font-editorial);
-    font-size: clamp(49px, 13.4vw, 60px);
+    font-size: var(--hero-type-size);
+    min-block-size: calc(var(--hero-type-size) * 4.08);
     font-weight: 400;
     line-height: 1.02;
     letter-spacing: -0.025em;
@@ -238,6 +242,9 @@
 
   .hero-actions > a { flex: 1; }
   .hero-actions > .hero-telegram { gap: 8px; padding-inline: 12px; }
+  @media (max-width: 639px) {
+    .hero-actions > a { min-height: 56px; padding-block: 9px; }
+  }
 
   .primary-link {
     border-color: var(--color-ink);
@@ -247,6 +254,8 @@
 
   .primary-link:active, .secondary-link:active { transform: translateY(1px); }
   .primary-link svg { transition: transform 180ms var(--ease-editorial); }
+  .primary-link > svg { flex-shrink: 0; }
+  .primary-link > span { white-space: normal; text-wrap: balance; }
   @media (hover: hover) and (pointer: fine) {
     .primary-link:hover { border-color: #dcd9cf; background: #dcd9cf; }
     .secondary-link:hover { border-color: var(--color-subtle); background: var(--color-surface); }
@@ -493,7 +502,7 @@
   @media (min-width: 640px) {
     .page-container { width: min(100% - 80px, 1392px); }
     .mobile-navigation { padding-inline: 40px; }
-    .hero-title { font-size: 64px; }
+    .hero-title { --hero-type-size: 64px; }
     .hero-actions > a { flex: 0 0 auto; min-width: 180px; }
     .hero-footnote { font-size: 11px; }
     .hero-portraits { max-width: 550px; height: 585px; margin-inline: auto; margin-top: 44px; }
@@ -520,9 +529,11 @@
   }
 
   @media (min-width: 768px) and (max-width: 1023px) {
-    .hero { display: grid; grid-template-columns: .95fr 1.05fr; column-gap: 28px; }
+    .header-inner { grid-template-columns: auto 1fr auto; }
+    .desktop-navigation { justify-content: center; gap: 24px; }
+    .hero { display: grid; grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr); column-gap: 28px; }
     .hero-copy { align-self: center; }
-    .hero-title { font-size: clamp(54px, 6.65vw, 64px); }
+    .hero-title { --hero-type-size: clamp(54px, 6.65vw, 64px); }
     .hero-description { font-size: 13px; }
     .hero-actions { flex-direction: column; gap: 8px; max-width: 260px; }
     .hero-actions > a { flex: initial; }
@@ -541,13 +552,15 @@
   }
 
   @media (min-width: 1024px) {
+    .header-telegram-full { display: inline; }
+    .header-telegram-short { display: none; }
     .page-container { width: min(100% - 112px, 1392px); }
     .desktop-navigation { gap: 36px; }
     .header-telegram { padding-inline: 17px; }
-    .hero { display: grid; grid-template-columns: 1fr 1fr; column-gap: 42px; padding-top: 58px; }
+    .hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 42px; padding-top: 58px; }
     .hero-copy { align-self: center; padding-bottom: 24px; }
     .hero-eyebrow { font-size: 11px; }
-    .hero-title { margin-top: 26px; font-size: clamp(70px, 6.5vw, 98px); line-height: 0.98; }
+    .hero-title { --hero-type-size: clamp(70px, 6.5vw, 98px); min-block-size: calc(var(--hero-type-size) * 3.92); margin-top: 26px; line-height: 0.98; }
     .hero-description { max-width: 350px; margin-top: 28px; font-size: 15px; }
     .hero-actions { margin-top: 30px; gap: 12px; }
     .hero-actions > a { min-width: 0; padding-inline: 20px; font-size: 12px; }
@@ -568,6 +581,21 @@
     .vision-copy h2 { max-width: 390px; font-size: 38px; }
     .vision-copy p { align-self: center; margin-top: 0; }
     .site-footer { min-height: 92px; }
+  }
+
+  /* Cyrillic uses the editorial Georgia fallback, whose glyphs are wider.
+     Reserve the original four-line heading height and protect portrait columns. */
+  html[lang="uk"] .hero-title { font-size: clamp(43px, 11.4vw, 54px); line-height: 1.15; }
+  @media (min-width: 640px) and (max-width: 767px) {
+    html[lang="uk"] .hero-title { font-size: 56px; }
+  }
+  @media (min-width: 768px) and (max-width: 1023px) {
+    html[lang="uk"] .hero-title { font-size: clamp(41px, 5.3vw, 54px); line-height: 1.25; }
+    html[lang="ru"] .hero-title { font-size: clamp(47px, 6.2vw, 60px); line-height: 1.15; }
+  }
+  @media (min-width: 1024px) {
+    html[lang="uk"] .hero-title { font-size: clamp(55px, 5.4vw, 80px); }
+    html:not([lang="en"]) .discovery-heading h2 { font-size: clamp(68px, 6.4vw, 92px); }
   }
 
   @keyframes copy-reveal {

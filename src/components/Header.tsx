@@ -2,8 +2,11 @@ import { useEffect, useRef, useState } from 'react'
 import { ArrowUpRight, Menu, X } from 'lucide-react'
 import { navigation } from '../data/site'
 import { TelegramLink } from './TelegramLink'
+import { LanguageSelector } from './LanguageSelector'
+import { useLanguage } from '../i18n/context'
 
 export function Header() {
+  const { t } = useLanguage()
   const [menuOpen, setMenuOpen] = useState(false)
   const menuButtonRef = useRef<HTMLButtonElement>(null)
   const headerRef = useRef<HTMLElement>(null)
@@ -42,26 +45,27 @@ export function Header() {
   return (
     <header ref={headerRef} className="site-header">
       <div className="header-inner page-container">
-        <a href="#discover" className="wordmark" aria-label="MUSE home" onClick={() => setMenuOpen(false)}>
+        <a href="#discover" className="wordmark" aria-label={t('home')} onClick={() => setMenuOpen(false)}>
           MUSE<span className="wordmark-dot" aria-hidden="true">.</span>
         </a>
 
-        <nav aria-label="Main navigation" className="desktop-navigation hidden md:flex">
+        <nav aria-label={t('mainNavigation')} className="desktop-navigation hidden md:flex">
           {navigation.map((item) => (
-            <a key={item.href} href={item.href} className="nav-link">{item.label}</a>
+            <a key={item.href} href={item.href} className="nav-link">{t(item.label)}</a>
           ))}
         </nav>
 
         <div className="header-actions">
+          <LanguageSelector onOpen={() => setMenuOpen(false)} />
           <TelegramLink className="header-telegram" variant="compact">
-            <span><span className="hidden sm:inline">Open in </span>Telegram</span>
+            <span className="header-telegram-full">{t('openTelegram')}</span><span className="header-telegram-short">Telegram</span>
           </TelegramLink>
 
           <button
             ref={menuButtonRef}
             type="button"
             className="icon-button menu-button md:hidden"
-            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+            aria-label={t(menuOpen ? 'closeMenu' : 'openMenu')}
             aria-expanded={menuOpen}
             aria-controls="mobile-navigation"
             onClick={() => setMenuOpen((open) => !open)}
@@ -73,17 +77,17 @@ export function Header() {
 
       <nav
         id="mobile-navigation"
-        aria-label="Mobile navigation"
+        aria-label={t('mobileNavigation')}
         className="mobile-navigation md:hidden"
         hidden={!menuOpen}
       >
         {navigation.map((item) => (
           <a key={item.href} href={item.href} onClick={() => setMenuOpen(false)}>
-            {item.label}
+            {t(item.label)}
             <ArrowUpRight size={18} aria-hidden="true" />
           </a>
         ))}
-        <p className="eyebrow">NEW PERSPECTIVES. REAL PERSONALITY.</p>
+        <p className="eyebrow">{t('navigationNote')}</p>
       </nav>
     </header>
   )
