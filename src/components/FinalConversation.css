@@ -1,0 +1,27 @@
+@layer components {
+  .final-conversation { display: grid; gap: 30px; padding-block: 44px 48px; border-bottom: 1px solid var(--color-line); }
+  .final-conversation-copy > .eyebrow { display: flex; align-items: center; gap: 9px; color: var(--color-muted); font-size: 9px; }
+  .final-conversation-copy h2 { max-width: 620px; margin-top: 16px; font-family: var(--font-editorial); font-size: clamp(42px, 11.5vw, 56px); font-weight: 400; line-height: 1.08; letter-spacing: -.02em; text-wrap: balance; }
+  .final-conversation-copy h2 > em { color: var(--color-muted); }
+  .final-conversation-copy > p:last-child { max-width: 340px; margin-top: 16px; color: var(--color-muted); font-size: 13px; line-height: 1.75; }
+  .final-conversation-action { width: 100%; max-width: 360px; }
+  .final-conversation-creators { display: flex; align-items: center; gap: 13px; margin-bottom: 18px; }
+  .final-conversation-creators > ul { display: flex; flex-shrink: 0; padding-left: 6px; }
+  .final-conversation-creators li { margin-left: -6px; }
+  .final-conversation-creators img { width: 37px; height: 37px; border: 3px solid var(--color-canvas); border-radius: 50%; object-fit: cover; }
+  .final-conversation-creators > span { color: var(--color-muted); font-size: 11px; }
+  .final-conversation-action > .telegram-link { width: 100%; padding-inline: 18px; }
+  .final-conversation-note { margin-top: 12px; color: var(--color-muted); font-size: 10px; line-height: 1.6; }
+
+  @media (min-width: 640px) {
+    .final-conversation { padding-block: 52px 56px; }
+    .final-conversation-copy h2 { font-size: 64px; }
+    .final-conversation-copy > p:last-child { max-width: none; font-size: 14px; }
+  }
+
+  @media (min-width: 1024px) {
+    .final-conversation { grid-template-columns: 1.5fr 1fr; align-items: center; gap: 64px; padding-block: 64px; }
+    .final-conversation-copy h2 { font-size: 72px; }
+    .final-conversation-action { justify-self: end; }
+  }
+}

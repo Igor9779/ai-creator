@@ -1,0 +1,49 @@
+@layer components {
+  .profile-content-count { padding-bottom: 4px; color: var(--color-muted); font-size: 10px; letter-spacing: 0.06em; white-space: nowrap; }
+  .profile-posts { display: flex; flex-direction: column; gap: 26px; margin-top: 26px; }
+
+  .profile-post {
+    min-width: 0;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--color-line);
+    opacity: 1;
+    transition: opacity 360ms var(--ease-editorial);
+  }
+
+  .profile-post[data-entered="false"] { opacity: 0; }
+  .profile-post:focus-within { opacity: 1; }
+  .profile-post:last-child { border-bottom: 0; padding-bottom: 0; }
+  .profile-post-header { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 16px; color: var(--color-muted); }
+  .profile-post-topic { display: flex; align-items: baseline; gap: 9px; min-width: 0; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; line-height: 1.6; }
+  .profile-post-topic > span { color: var(--color-accent); font-size: 10px; letter-spacing: 0; }
+  .profile-post-header time { flex-shrink: 0; font-size: 10px; white-space: nowrap; }
+  .profile-post-photo { overflow: hidden; aspect-ratio: 3 / 2; border: 1px solid var(--color-line); background: var(--color-surface); }
+  .profile-post-photo > img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: var(--post-image-position, 50% 50%); }
+  .profile-post-caption { margin-top: 16px; font-size: 14px; line-height: 1.7; }
+  .profile-post-quote { padding-right: 6px; font-family: var(--font-editorial); font-size: 30px; line-height: 1.22; text-wrap: pretty; }
+  .profile-post-quote > span { color: var(--color-accent); }
+  .profile-post-footer { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-top: 10px; }
+  .profile-post-like { display: inline-flex; align-items: center; justify-content: flex-start; gap: 9px; min-width: 64px; min-height: 44px; color: var(--color-muted); font-size: 12px; transition: color 180ms; }
+  .profile-post-like:hover { color: var(--color-ink); }
+  .profile-post-like[aria-pressed="true"] { color: var(--color-accent); }
+  .profile-post-like > svg { transition: transform 180ms var(--ease-editorial); }
+  .profile-post-like:active > svg { transform: scale(1.12); }
+  .profile-post-comments { display: flex; align-items: center; gap: 7px; color: var(--color-muted); font-size: 11px; }
+  .profile-comments-label { margin-left: -3px; }
+
+  @media (min-width: 640px) {
+    .profile-posts { gap: 30px; }
+    .profile-post-topic { font-size: 10px; }
+    .profile-post-header time { font-size: 11px; }
+    .profile-post-caption { font-size: 15px; }
+    .profile-post-quote { font-size: 36px; }
+  }
+
+  @media (min-width: 960px) {
+    .profile-post-quote { font-size: 34px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .profile-post, .profile-post[data-entered="false"] { opacity: 1; transform: none; transition: none; }
+  }
+}
